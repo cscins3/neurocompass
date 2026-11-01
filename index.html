@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NeuroCompass 神經羅盤</title>
+<meta name="description" content="一位神經科醫師的田野筆記：意識、腦波、神經調控、腦機介面、失智、語言、動作與頭痛。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400;1,500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500&family=Noto+Sans+TC:wght@400;500&family=Noto+Serif+TC:wght@500;600&display=swap">
+<style>
+/* Layout: a navigator's night chart. Editorial left-aligned column over a live star map;
+   the Scope section is laid out as a literal 3×3 compass, eight headings around a central rose.
+   Single deliberate dark look (night sky), so no light-theme block. */
+:root{
+  color-scheme:dark;
+  --night:#070a12;      /* sky */
+  --night-2:#0c1120;    /* raised surfaces */
+  --starlight:#ebe5d6;  /* primary text */
+  --mist:#b9bfcc;       /* body text */
+  --haze:#8d95a9;       /* secondary */
+  --haze-2:#6c7690;     /* tertiary labels */
+  --brass:#d2ab66;      /* compass, selection */
+  --ice:#93b9f2;        /* signal: traces, network */
+  --rose:#e8907f;       /* pathology (absence seizure) */
+  --seal:#c4462f;       /* 朱印, used once */
+  --line:rgba(210,171,102,.16);
+  --line-2:rgba(147,185,242,.18);
+  --panel:rgba(10,14,26,.74);
+  --f-display:"Cormorant Garamond","Noto Serif TC",Georgia,serif;
+  --f-zh:"Noto Serif TC","Songti TC","PMingLiU",serif;
+  --f-body:"IBM Plex Sans","Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+}
+[hidden]{display:none!important}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;background:var(--night);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--night);color:var(--starlight);font-family:var(--f-body);font-size:16px;line-height:1.75;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::selection{background:rgba(210,171,102,.3);color:var(--starlight)}
+a{color:inherit}
+:focus-visible{outline:1.5px solid var(--brass);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+
+#sky{position:fixed;top:0;left:0;z-index:0;display:block;pointer-events:none}
+.hero,main,footer{position:relative;z-index:1}
+.wrap{max-width:1120px;margin-inline:auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+
+/* ---------- nav ---------- */
+.nav{position:fixed;top:0;left:0;right:0;z-index:20;padding-top:env(safe-area-inset-top,0px);background:rgba(7,10,18,.74);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.nav .wrap{height:60px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--starlight);font-family:var(--f-display);font-weight:600;font-size:15px;letter-spacing:.24em;white-space:nowrap}
+.brand b{color:var(--brass);font-weight:600}
+.brand svg{width:22px;height:22px;flex:none}
+.mc-ring{fill:none;stroke:var(--brass);stroke-opacity:.6}
+.mc-n{fill:var(--brass)}
+.mc-s{fill:var(--ice);fill-opacity:.7}
+.nav ul{display:flex;gap:clamp(12px,2.6vw,30px);list-style:none;margin:0;padding:0}
+.nav a.l{display:flex;flex-direction:column;align-items:center;gap:1px;text-decoration:none;color:var(--haze);transition:color .3s}
+.nav a.l .zh{font-size:14px;line-height:1.3;letter-spacing:.14em;font-weight:500}
+.nav a.l .en{font-family:var(--f-mono);font-size:9.5px;line-height:1.3;letter-spacing:.18em;text-transform:uppercase;opacity:.7}
+.nav a.l:hover,.nav a.l.on{color:var(--brass)}
+.nav a.l .zh{white-space:nowrap}
+@media (max-width:560px){.nav a.l .en{display:none}.nav a.l .zh{font-size:13px;letter-spacing:.06em}.nav ul{gap:12px}.brand{font-size:13px;letter-spacing:.14em}}
+@media (max-width:360px){.brand span{display:none}}
+
+/* ---------- hero ---------- */
+.hero{padding-block:calc(96px + env(safe-area-inset-top,0px)) 40px;text-align:center}
+.hero .wrap{display:flex;flex-direction:column;align-items:center}
+.hero::before{content:"";position:absolute;left:50%;top:calc(96px + env(safe-area-inset-top,0px) + min(170px,40vw));width:min(760px,100vw);aspect-ratio:1;transform:translate(-50%,-50%);background:radial-gradient(closest-side,rgba(210,171,102,.08),transparent 72%);pointer-events:none}
+.rose{display:block;overflow:visible;max-width:100%;height:auto}
+.rose-hero{width:min(340px,80vw);aspect-ratio:1;position:relative}
+.r-halo{fill:var(--night);fill-opacity:.6}
+.r-ring{fill:none;stroke:var(--brass);stroke-opacity:.55;stroke-width:1.2}
+.r-ring.in{stroke-opacity:.22;stroke-width:1}
+.r-ring.c{stroke-opacity:.3;stroke-width:1}
+.r-tick{stroke:var(--brass);stroke-opacity:.26;stroke-width:1}
+.r-tick.mid{stroke-opacity:.55}
+.r-tick.maj{stroke-opacity:.9;stroke-width:1.5}
+.r-star{stroke:var(--brass);stroke-opacity:.35;stroke-width:.8;fill:var(--brass)}
+.r-star.fa{fill-opacity:.17}
+.r-star.fb{fill-opacity:.05}
+.r-letter{font-family:var(--f-display);font-size:19px;font-weight:600;fill:var(--haze);text-anchor:middle;dominant-baseline:central}
+.r-letter.north{fill:var(--brass)}
+.r-label{font-family:var(--f-zh);font-size:14px;font-weight:500;letter-spacing:.06em;fill:var(--haze-2);text-anchor:middle;dominant-baseline:central;cursor:pointer;transition:fill .35s}
+.r-label:hover,.r-label.on{fill:var(--brass)}
+.n-a{fill:var(--brass)}
+.n-b{fill:var(--brass);fill-opacity:.58}
+.s-a{fill:var(--ice);fill-opacity:.85}
+.s-b{fill:var(--ice);fill-opacity:.48}
+.n-cap{fill:var(--night);stroke:var(--brass);stroke-width:1.3}
+.n-pin{fill:var(--brass)}
+.readout{margin:12px 0 0;font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;color:var(--haze);font-variant-numeric:tabular-nums;min-height:1.7em}
+.readout b{color:var(--brass);font-weight:500}
+.wordmark{margin:22px -.18em 0 0;display:flex;flex-wrap:wrap;justify-content:center;font-family:var(--f-display);font-weight:500;font-size:clamp(30px,8.4vw,80px);line-height:1.05;letter-spacing:.18em}
+.wordmark b{font-weight:500;color:var(--brass)}
+.zh-name{margin:16px -.8em 0 0;font-family:var(--f-zh);font-weight:600;font-size:20px;letter-spacing:.8em;color:var(--starlight);opacity:.9}
+.tagline{margin:14px 0 0;font-family:var(--f-mono);font-size:11.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--haze)}
+.scrollhint{margin-top:40px;display:flex;flex-direction:column;align-items:center;gap:10px;font-family:var(--f-zh);font-size:12px;letter-spacing:.4em;color:var(--haze-2);text-decoration:none}
+.scrollhint i{display:block;width:1px;height:36px;background:linear-gradient(var(--brass),transparent);transform-origin:top;animation:drip 2.6s ease-in-out infinite}
+@keyframes drip{0%{transform:scaleY(0);opacity:0}35%{opacity:1}100%{transform:scaleY(1);opacity:0}}
+
+/* ---------- sections ---------- */
+section{padding-block:clamp(64px,8vw,104px);scroll-margin-top:56px}
+.kicker{display:flex;align-items:center;gap:12px;margin:0 0 18px;color:var(--brass)}
+.kicker .zh{font-family:var(--f-zh);font-weight:600;font-size:14px;letter-spacing:.3em}
+.kicker .en{font-family:var(--f-mono);font-size:11px;letter-spacing:.24em;text-transform:uppercase;opacity:.8}
+.kicker::after{content:"";width:56px;height:1px;background:currentColor;opacity:.45}
+h2{margin:0;font-family:var(--f-zh);font-weight:500;font-size:clamp(26px,3.6vw,40px);line-height:1.4;letter-spacing:.06em;text-wrap:balance}
+h2.big{font-size:clamp(28px,4.1vw,48px);line-height:1.34}
+.nw{white-space:nowrap}
+.nt{text-transform:none}
+.lead{margin:20px 0 0;max-width:36em;color:var(--mist);font-size:clamp(15.5px,1.6vw,17px);line-height:1.95}
+.sec-head{max-width:760px}
+.fn{margin:18px 0 0;font-family:var(--f-mono);font-size:11px;letter-spacing:.04em;color:var(--haze-2)}
+
+.manifesto{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:clamp(28px,5vw,72px);align-items:end}
+.manifesto .lead{margin-top:0}
+@media (max-width:860px){.manifesto{grid-template-columns:minmax(0,1fr)}}
+
+.rv.in{animation:rise .9s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i,0) * 70ms)}
+@keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+
+/* ---------- scope: the compass grid ---------- */
+.compass-grid{display:grid;gap:16px;margin-top:48px;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-areas:"nw n ne" "w c e" "sw s se"}
+.a-n{grid-area:n}.a-ne{grid-area:ne}.a-e{grid-area:e}.a-se{grid-area:se}
+.a-s{grid-area:s}.a-sw{grid-area:sw}.a-w{grid-area:w}.a-nw{grid-area:nw}
+.rose-cell{grid-area:c;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px}
+.rose-scope{width:min(250px,100%);aspect-ratio:1}
+.hd{position:relative;display:flex;flex-direction:column;gap:8px;min-width:0;padding:22px 22px 20px;border:1px solid var(--line);border-radius:3px;background:var(--panel);cursor:default;transition:border-color .35s,background-color .35s}
+.hd::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(220px 160px at var(--gx) var(--gy),rgba(210,171,102,.14),transparent 70%);opacity:0;transition:opacity .4s}
+.hd:hover,.hd:focus-visible,.hd.on{border-color:rgba(210,171,102,.55)}
+.hd:hover::before,.hd:focus-visible::before,.hd.on::before{opacity:1}
+.hd-top{display:flex;justify-content:space-between;align-items:center}
+.hd-ic{width:30px;height:30px;color:var(--brass);fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.hd-b{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;color:var(--haze-2);font-variant-numeric:tabular-nums}
+.hd.on .hd-b{color:var(--brass)}
+.hd h3{margin:6px 0 0;font-family:var(--f-zh);font-weight:600;font-size:22px;line-height:1.3;letter-spacing:.12em}
+.hd .en{margin:-4px 0 0;font-family:var(--f-display);font-style:italic;font-size:17px;color:var(--haze)}
+.hd .d{margin:0;color:var(--mist);font-size:14.5px;line-height:1.8}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:6px}
+.tag{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.05em;color:var(--ice);border:1px solid var(--line-2);border-radius:2px;padding:2px 8px}
+@media (max-width:900px){
+  .compass-grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"c c" "n ne" "e se" "s sw" "w nw"}
+  .rose-scope{width:min(210px,60vw)}
+}
+@media (max-width:600px){
+  .compass-grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"c" "n" "ne" "e" "se" "s" "sw" "w" "nw"}
+}
+
+/* ---------- lab ---------- */
+.lab-bar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:14px;margin-top:40px}
+.tabs{display:flex;border:1px solid var(--line);border-radius:3px;overflow:hidden}
+.tabs button{appearance:none;border:0;background:var(--panel);color:var(--haze);font:inherit;font-size:14px;letter-spacing:.08em;padding:9px 18px;cursor:pointer;display:flex;align-items:baseline;gap:8px;transition:background-color .3s,color .3s}
+.tabs button+button{border-left:1px solid var(--line)}
+.tabs button span{font-family:var(--f-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.75}
+.tabs button[aria-selected="true"]{background:var(--brass);color:var(--night)}
+.states{display:flex;flex-wrap:wrap;gap:6px}
+.states button{appearance:none;background:var(--panel);border:1px solid var(--line-2);color:var(--haze);font:inherit;font-size:13px;padding:5px 11px;border-radius:2px;cursor:pointer;display:flex;align-items:baseline;gap:6px;transition:background-color .3s,color .3s,border-color .3s}
+.states button span{font-family:var(--f-mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;opacity:.75}
+.states button:hover{border-color:var(--ice);color:var(--starlight)}
+.states button[aria-pressed="true"]{background:var(--ice);border-color:var(--ice);color:var(--night)}
+.stage{margin-top:14px;border:1px solid var(--line);border-radius:3px;background:rgba(8,12,22,.84);overflow:hidden}
+.view-eeg{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);height:420px}
+.view-fire{position:relative;height:420px}
+.pane{position:relative;min-width:0;min-height:0}
+.pane canvas,.view-fire canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.pane.trace{border-left:1px solid var(--line)}
+#fireCv{cursor:crosshair}
+.pane-label{position:absolute;top:12px;left:14px;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--haze-2);pointer-events:none}
+.info{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) minmax(0,.95fr);border-top:1px solid var(--line)}
+.info-fire{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr)}
+.info>div{padding:22px 24px 24px;min-width:0}
+.info>div+div{border-left:1px solid var(--line)}
+.i-eyebrow{margin:0 0 10px;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--haze-2)}
+.i-title{margin:0;display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 12px;font-family:var(--f-zh);font-weight:600;font-size:23px;letter-spacing:.06em;line-height:1.3}
+.i-title .code{font-family:var(--f-mono);font-weight:500;font-size:22px;color:var(--brass);letter-spacing:0}
+.i-state{margin:6px 0 10px;font-size:13px;color:var(--ice);letter-spacing:.06em}
+.i-note{margin:0;color:var(--mist);font-size:14px;line-height:1.8}
+.bands{display:grid;gap:11px}
+.band{display:grid;grid-template-columns:16px 66px minmax(0,1fr) 38px;align-items:center;gap:10px;font-family:var(--f-mono);font-size:11px;color:var(--haze)}
+.band .sym{font-family:var(--f-display);font-size:20px;font-style:italic;color:var(--starlight);line-height:1}
+.band .bar{height:5px;background:var(--line-2);border-radius:1px;overflow:hidden}
+.band .bar i{display:block;height:100%;width:0;background:var(--ice);transition:width .6s cubic-bezier(.2,.7,.2,1)}
+.band .pct{text-align:right;font-variant-numeric:tabular-nums;color:var(--starlight)}
+.big-num{margin:0;font-family:var(--f-display);font-weight:500;font-size:52px;line-height:1;color:var(--brass);font-variant-numeric:lining-nums tabular-nums}
+.dar-scale{position:relative;height:24px;margin:16px 4px 10px;border-top:1px solid var(--line)}
+.dar-scale span{position:absolute;top:7px;transform:translateX(-50%);font-family:var(--f-mono);font-size:10px;color:var(--haze-2)}
+.dar-scale span:nth-of-type(1){left:0}
+.dar-scale span:nth-of-type(2){left:33.33%}
+.dar-scale span:nth-of-type(3){left:66.67%}
+.dar-scale span:nth-of-type(4){left:100%}
+.dar-scale i{position:absolute;top:-5px;left:0;width:9px;height:9px;margin-left:-4.5px;background:var(--brass);transform:rotate(45deg);transition:left .6s cubic-bezier(.2,.7,.2,1)}
+.i-small{margin:0;font-size:12.5px;line-height:1.75;color:var(--haze)}
+.ghost{appearance:none;background:none;border:1px solid var(--line);color:var(--haze);font:inherit;font-size:12.5px;letter-spacing:.12em;padding:6px 16px;border-radius:2px;cursor:pointer;margin-top:16px;transition:border-color .3s,color .3s}
+.ghost:hover{border-color:var(--brass);color:var(--brass)}
+.tabs button{white-space:nowrap}
+@media (max-width:560px){
+  .tabs{width:100%}
+  .tabs button{flex:1;justify-content:center;padding:9px 10px}
+  .tabs button span{display:none}
+}
+@media (max-width:900px){
+  .view-eeg{grid-template-columns:minmax(0,1fr);grid-template-rows:340px 270px;height:auto}
+  .pane.trace{border-left:0;border-top:1px solid var(--line)}
+  .view-fire{height:380px}
+  .info,.info-fire{grid-template-columns:minmax(0,1fr)}
+  .info>div+div{border-left:0;border-top:1px solid var(--line)}
+}
+
+/* ---------- notes ---------- */
+.notes{margin-top:36px;border-top:1px solid var(--line)}
+.note{display:grid;grid-template-columns:150px minmax(0,1fr) auto;gap:20px;align-items:baseline;padding:18px 6px;border-bottom:1px solid var(--line);text-decoration:none;color:inherit;transition:background-color .3s,padding .3s}
+.note:hover{background:rgba(210,171,102,.04);padding-left:14px}
+.note .k{font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;color:var(--haze-2)}
+.note .t{font-size:16.5px;color:var(--starlight);min-width:0}
+.note .s{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;color:var(--brass);white-space:nowrap}
+.note .s.draft{color:var(--haze-2)}
+@media (max-width:640px){.note{grid-template-columns:minmax(0,1fr) auto;row-gap:2px}.note .k{grid-column:1 / -1}}
+
+/* ---------- about ---------- */
+.about{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:40px;align-items:end}
+.lead.dim{color:var(--haze);margin-top:14px}
+.seal{width:76px;height:76px;padding:6px;border:2.5px solid var(--seal);border-radius:4px;color:var(--seal);font-family:var(--f-zh);font-weight:600;font-size:26px;line-height:1.08;writing-mode:vertical-rl;display:flex;align-items:center;justify-content:center;transform:rotate(-4deg);opacity:.9;margin-bottom:8px}
+@media (max-width:600px){.about{grid-template-columns:minmax(0,1fr)}.seal{justify-self:start}}
+
+footer{border-top:1px solid var(--line);padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));color:var(--haze-2);font-size:12.5px;letter-spacing:.05em}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px 24px}
+</style>
+</head>
+<body>
+<canvas id="sky" aria-hidden="true"></canvas>
+
+<nav class="nav" aria-label="主要導覽">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="NeuroCompass 神經羅盤，回到頂端">
+      <svg viewBox="0 0 22 22" aria-hidden="true"><circle class="mc-ring" cx="11" cy="11" r="10"/><g id="navNeedle"><path class="mc-n" d="M11 2.5 13 11 11 12.6 9 11Z"/><path class="mc-s" d="M11 19.5 13 11 11 9.4 9 11Z"/></g></svg>
+      <span>NEURO<b>COMPASS</b></span>
+    </a>
+    <ul>
+      <li><a class="l" href="#scope" data-sec="scope"><span class="zh">版圖</span><span class="en">Scope</span></a></li>
+      <li><a class="l" href="#lab" data-sec="lab"><span class="zh">實驗室</span><span class="en">Lab</span></a></li>
+      <li><a class="l" href="#notes" data-sec="notes"><span class="zh">筆記</span><span class="en">Notes</span></a></li>
+      <li><a class="l" href="#about" data-sec="about"><span class="zh">關於</span><span class="en">About</span></a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <svg class="rose rose-hero" id="heroRose" viewBox="-200 -200 400 400" role="img" aria-label="羅盤：指針跟著游標轉動，指向八個方位"></svg>
+    <p class="readout" id="heroRead"><b>000°</b> N · 意識 Consciousness</p>
+    <h1 class="wordmark"><span>NEURO</span><b>COMPASS</b></h1>
+    <p class="zh-name">神經羅盤</p>
+    <p class="tagline">Navigate the nervous system</p>
+    <a class="scrollhint" href="#manifesto"><span>向下航行</span><i></i></a>
+  </div>
+</header>
+
+<main>
+  <section id="manifesto" class="wrap manifesto">
+    <div class="rv">
+      <p class="kicker"><span class="zh">序</span><span class="en">Manifesto</span></p>
+      <h2 class="big"><span class="nw">一個羅盤，</span><br><span class="nw">八百六十億個神經元。</span></h2>
+    </div>
+    <div class="rv" style="--i:1">
+      <p class="lead">每一次看診都是一趟探勘。讀頭皮上的節律，沿著軸突追蹤訊號，在語言、動作或記憶開始失靈的時候，追問意識究竟落在哪裡。這裡是一本臨床神經學的田野筆記：腦波、意識障礙、神經調控、腦機介面、失智、失語、動作障礙與頭痛，一次校準一個方位。</p>
+      <p class="fn">86 × 10⁹ · 成人腦神經元數量的估計值（Azevedo et al., 2009）</p>
+    </div>
+  </section>
+
+  <section id="scope" class="wrap">
+    <header class="sec-head rv">
+      <p class="kicker"><span class="zh">版圖</span><span class="en">Scope</span></p>
+      <h2>同一個羅盤上的八個方位。</h2>
+      <p class="lead">把游標移到任何一個方位，或點一下卡片，中央的指針就會轉過去。</p>
+    </header>
+
+    <div class="compass-grid" id="compassGrid">
+      <div class="rose-cell" aria-hidden="true">
+        <svg class="rose rose-scope" id="scopeRose" viewBox="-160 -160 320 320"></svg>
+        <p class="readout" id="scopeRead"><b>000°</b> N · 意識</p>
+      </div>
+
+      <article class="hd a-n rv" id="h-0" data-b="0" tabindex="0" style="--gx:50%;--gy:100%;--i:0">
+        <div class="hd-top">
+          <svg class="hd-ic" viewBox="0 0 32 32" aria-hidden="true"><path d="M3 16c3.5-5.5 8-8.2 13-8.2s9.5 2.7 13 8.2c-3.5 5.5-8 8.2-13 8.2S6.5 21.5 3 16z"/><circle cx="16" cy="16" r="4.3"/><circle cx="16" cy="16" r="1.2" fill="currentColor" stroke="none"/><path d="M16 3.5v2.2M8 5.6l1.2 1.8M24 5.6l-1.2 1.8"/></svg>
+          <span class="hd-b">000° N</span>
+        </div>
+        <h3>意識</h3><p class="en">Consciousness</p>
+        <p class="d">意識障礙（DoC）、昏迷預後與 CRS-R 評估，還有視丘在其中扮演的角色。</p>
+        <div class="tags"><span class="tag">DoC</span><span class="tag">CRS-R</span><span class="tag">VS/UWS</span></div>
+      </article>
+
+      <article class="hd a-ne rv" id="h-45" data-b="45" tabindex="0" style="--gx:0%;--gy:100%;--i:1">
+        <div class="hd-top">
+          <svg class="hd-ic" viewBox="0 0 32 32" aria-hidden="true"><path d="M2 17h4.5l2-5.5 3 11 3.2-15.5 3.1 13.5 2.2-7 1.8 3.5H30"/></svg>
+          <span class="hd-b">045° NE</span>
+        </div>
+        <h3>腦波</h3><p class="en">EEG</p>
+        <p class="d">α、θ、δ 與棘波。把一段腦波紀錄當成地圖來讀，從節律找出位置。</p>
+        <div class="tags"><span class="tag">qEEG</span><span class="tag">DAR</span><span class="tag">Sleep</span></div>
+      </article>
+
+      <article class="hd a-e rv" id="h-90" data-b="90" tabindex="0" style="--gx:0%;--gy:50%;--i:2">
+        <div class="hd-top">
+          <svg class="hd-ic" viewBox="0 0 32 32" aria-hidden="true"><circle cx="10" cy="19" r="6.5"/><circle cx="22" cy="19" r="6.5"/><circle cx="10" cy="19" r="3"/><circle cx="22" cy="19" r="3"/><path d="M16 12.5V4M13.2 4h5.6"/></svg>
+          <span class="hd-b">090° E</span>
+        </div>
+        <h3>神經調控</h3><p class="en">Neuromodulation</p>
+        <p class="d">rTMS 與其他非侵入性腦刺激，用磁場和電流調整失衡的神經網絡。</p>
+        <div class="tags"><span class="tag">rTMS</span><span class="tag">NIBS</span><span class="tag">Biomarker</span></div>
+      </article>
+
+      <article class="hd a-se rv" id="h-135" data-b="135" tabindex="0" style="--gx:0%;--gy:0%;--i:3">
+        <div class="hd-top">
+          <svg class="hd-ic" viewBox="0 0 32 32" aria-hidden="true"><rect x="2.5" y="6.5" width="19" height="14" rx="1.5"/><path d="M8.5 26h7M12 20.5V26"/><circle cx="12" cy="13.5" r="2.6"/><path d="M12 9.2v1.4M12 16.4v1.4M7.7 13.5h1.4M14.9 13.5h1.4"/><path d="M24.6 10.2a5 5 0 0 1 0 6.6M27.6 7.8a9 9 0 0 1 0 11.4"/></svg>
+          <span class="hd-b">135° SE</span>
+        </div>
+        <h3>腦機介面</h3><p class="en">Brain–Computer Interface</p>
+        <p class="d">SSVEP、P300 與眼動追蹤，讓閉鎖症候群的病人重新有辦法表達。</p>
+        <div class="tags"><span class="tag">SSVEP</span><span class="tag">P300</span><span class="tag">Eye tracking</span></div>
+      </article>
+
+      <article class="hd a-s rv" id="h-180" data-b="180" tabindex="0" style="--gx:50%;--gy:0%;--i:4">
+        <div class="hd-top">
+          <svg class="hd-ic" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="12.5"/><path d="M16 4.8v2M27.2 16h-2M16 27.2v-2M4.8 16h2"/><path d="M16 16l-2.5-5.4M16 16l7.8-4.5"/><circle cx="16" cy="16" r="1" fill="currentColor" stroke="none"/></svg>
+          <span class="hd-b">180° S</span>
+        </div>
+        <h3>失智</h3><p class="en">Dementia</p>
+        <p class="d">記憶迴路、生物標記，以及門診如何區分阿茲海默症與額顳葉失智。</p>
+        <div class="tags"><span class="tag">MoCA</span><span class="tag">Biomarkers</span><span class="tag">FTD</span></div>
+      </article>
+
+      <article class="hd a-sw rv" id="h-225" data-b="225" tabindex="0" style="--gx:100%;--gy:0%;--i:5">
+        <div class="hd-top">
+          <svg class="hd-ic" viewBox="0 0 32 32" aria-hidden="true"><path d="M4.5 6.5h23v14H14.5L8.5 26v-5.5h-4z"/><path d="M9.5 11.5h13M9.5 15.5h8"/></svg>
+          <span class="hd-b">225° SW</span>
+        </div>
+        <h3>語言</h3><p class="en">Language</p>
+        <p class="d">失語症與命名障礙，以及 Broca 區和 Wernicke 區之間脆弱的連結。</p>
+        <div class="tags"><span class="tag">Aphasia</span><span class="tag">Naming</span><span class="tag">fMRI</span></div>
+      </article>
+
+      <article class="hd a-w rv" id="h-270" data-b="270" tabindex="0" style="--gx:100%;--gy:50%;--i:6">
+        <div class="hd-top">
+          <svg class="hd-ic" viewBox="0 0 32 32" aria-hidden="true"><path d="M16.5 15.6L16.7 15.6L17.0 15.7L17.2 16.0L17.5 16.4L17.4 16.9L17.3 17.5L16.9 18.0L16.3 18.4L15.6 18.6L14.8 18.7L14.0 18.3L13.2 17.8L12.5 17.0L12.3 16.0L12.2 14.9L12.3 13.6L13.1 12.7L14.1 11.7L15.3 11.0L16.7 11.1L18.2 11.1L19.8 11.6L20.7 13.0L21.9 14.3L22.5 16.0L22.0 17.8L21.8 19.7L20.7 21.4L18.9 22.3L17.1 23.5L14.9 23.8L12.9 22.9L10.5 22.3L8.9 20.6L8.1 18.3L6.9 16.0L7.2 13.4L8.6 11.2L9.5 8.5L11.9 7.1L14.6 6.6L17.5 5.4L20.3 6.6L22.7 8.3L25.6 9.8L26.5 12.9L26.9 16.0L27.7 19.4L25.7 22.3L23.6 24.8L21.4 27.8L17.7 28.0"/></svg>
+          <span class="hd-b">270° W</span>
+        </div>
+        <h3>動作</h3><p class="en">Movement</p>
+        <p class="d">基底核迴路、顫抖與運動失調，每個動作背後都有一套精密的編排。</p>
+        <div class="tags"><span class="tag">Parkinson</span><span class="tag">Tremor</span><span class="tag">Ataxia</span></div>
+      </article>
+
+      <article class="hd a-nw rv" id="h-315" data-b="315" tabindex="0" style="--gx:100%;--gy:100%;--i:7">
+        <div class="hd-top">
+          <svg class="hd-ic" viewBox="0 0 32 32" aria-hidden="true"><path d="M7.1 21.1L3.2 20.4L5.8 17.5L2.5 15.4L6.0 13.6L3.7 10.4L7.6 10.0L6.7 6.2L10.4 7.3L11.0 3.5L14.1 5.9L16.0 2.5L17.9 5.9L21.0 3.5L21.6 7.3L25.3 6.2L24.4 10.0L28.3 10.4L26.0 13.6L29.5 15.4L26.2 17.5L28.8 20.4L24.9 21.2"/><circle cx="16" cy="17" r="1.1" fill="currentColor" stroke="none"/></svg>
+          <span class="hd-b">315° NW</span>
+        </div>
+        <h3>頭痛</h3><p class="en">Headache</p>
+        <p class="d">偏頭痛是一種網絡疾病：先兆、三叉神經血管系統，還有問診本身的功夫。</p>
+        <div class="tags"><span class="tag">Migraine</span><span class="tag">Aura</span><span class="tag">TCC</span></div>
+      </article>
+    </div>
+  </section>
+
+  <section id="lab" class="wrap">
+    <header class="sec-head rv">
+      <p class="kicker"><span class="zh">實驗室</span><span class="en">Lab</span></p>
+      <h2>把診間寫成程式。</h2>
+      <p class="lead">兩件來自神經科的儀器。在腦波實驗室切換病人的狀態，看頭皮上的節律怎麼改寫；在神經元點火裡點一下，觸發動作電位，看它怎麼徵召整個網絡。</p>
+    </header>
+
+    <div class="lab-bar rv" style="--i:1">
+      <div class="tabs" role="tablist" aria-label="選擇儀器">
+        <button type="button" role="tab" id="tabEEG" aria-selected="true" aria-controls="viewEEG">腦波實驗室<span>EEG Lab</span></button>
+        <button type="button" role="tab" id="tabFire" aria-selected="false" aria-controls="viewFire">神經元點火<span>Neuron Fire</span></button>
+      </div>
+      <div class="states" id="stateBtns" role="group" aria-label="病人狀態"></div>
+    </div>
+
+    <div class="stage rv" style="--i:2">
+      <div class="view-eeg" id="viewEEG" role="tabpanel" aria-labelledby="tabEEG">
+        <div class="pane head" id="headBox">
+          <canvas id="headCv" tabindex="0" aria-label="10–20 電極圖。點選電極，或用左右方向鍵切換"></canvas>
+          <span class="pane-label">10–20 System · 點選電極</span>
+        </div>
+        <div class="pane trace" id="traceBox">
+          <canvas id="traceCv" aria-hidden="true"></canvas>
+          <span class="pane-label" id="traceLabel">O1 左枕 · 閉眼清醒</span>
+        </div>
+      </div>
+      <div class="view-fire" id="viewFire" role="tabpanel" aria-labelledby="tabFire" hidden>
+        <canvas id="fireCv" aria-label="神經網絡，點一下觸發動作電位"></canvas>
+        <span class="pane-label">點任意處觸發動作電位</span>
+      </div>
+
+      <div class="info" id="infoEEG">
+        <div>
+          <p class="i-eyebrow" id="icRegion">頂枕區 · Parieto-occipital</p>
+          <h3 class="i-title"><span class="code" id="icCode">O1</span><span id="icZh">左枕</span></h3>
+          <p class="i-state" id="icState">閉眼清醒 · Eyes closed</p>
+          <p class="i-note" id="icNote">後頭部優勢節律（PDR）：約 10 Hz 的 α 波在枕葉最明顯，是清醒而安靜的大腦最典型的樣子。一睜眼就會被阻斷。</p>
+        </div>
+        <div>
+          <p class="i-eyebrow">相對功率 · Relative power</p>
+          <div class="bands" id="bands"></div>
+        </div>
+        <div>
+          <p class="i-eyebrow">DAR · <span class="nt">δ / α</span></p>
+          <p class="big-num" id="darVal">0.08</p>
+          <div class="dar-scale" aria-hidden="true"><i id="darMark"></i><span>0.1</span><span>1</span><span>10</span><span>100</span></div>
+          <p class="i-small" id="darNote">δ 與 α 的功率比。數值越高，代表慢波越多、α 越少；意識障礙與失智研究常用它來量化腦波減慢。此處為模擬訊號。</p>
+        </div>
+      </div>
+
+      <div class="info info-fire" id="infoFire" hidden>
+        <div>
+          <p class="i-eyebrow">Neuron Fire · 神經元點火</p>
+          <h3 class="i-title">徵召整個網絡</h3>
+          <p class="i-note" style="margin-top:10px">在場域裡任意點一下，觸發一個動作電位，看它沿著突觸擴散，每個被徵召的神經元都會計入。大量神經元同步放電正是癲癇發作的起點，在這裡只是好看而已。</p>
+        </div>
+        <div>
+          <p class="i-eyebrow">已徵召神經元</p>
+          <p class="big-num" id="fireCount">0</p>
+          <button type="button" class="ghost" id="fireReset">重設</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="notes" class="wrap">
+    <header class="sec-head rv">
+      <p class="kicker"><span class="zh">筆記</span><span class="en">Field Notes</span></p>
+      <h2>最近的紀錄</h2>
+    </header>
+    <!-- 有文章網址時，把 <div class="note"> 換成 <a class="note" href="文章網址">（結尾的 </div> 也改成 </a>） -->
+    <div class="notes rv" style="--i:1">
+      <div class="note"><span class="k">DEMENTIA</span><span class="t">聽力損失與失智</span><span class="s">Via Neuronalis</span></div>
+      <div class="note"><span class="k">DEMENTIA</span><span class="t">鋰鹽與失智</span><span class="s">Via Neuronalis</span></div>
+      <div class="note"><span class="k">DEMENTIA</span><span class="t">口腔健康與失智</span><span class="s">Via Neuronalis</span></div>
+      <div class="note"><span class="k">EPILEPSY</span><span class="t">莫札特效應與癲癇</span><span class="s">Via Neuronalis</span></div>
+      <div class="note"><span class="k">SLEEP</span><span class="t">睡眠科學</span><span class="s">Via Neuronalis</span></div>
+      <div class="note"><span class="k">EEG</span><span class="t">閉上眼睛的簽名：後頭部優勢節律</span><span class="s draft">撰寫中</span></div>
+      <div class="note"><span class="k">CONSCIOUSNESS</span><span class="t">DAR：從 δ 與 α 的比值看意識</span><span class="s draft">撰寫中</span></div>
+      <div class="note"><span class="k">BCI</span><span class="t">用眼睛說話：閉鎖症候群的眼動溝通</span><span class="s draft">撰寫中</span></div>
+    </div>
+  </section>
+
+  <section id="about" class="wrap">
+    <div class="about rv">
+      <div>
+        <p class="kicker"><span class="zh">關於</span><span class="en">About</span></p>
+        <h2>領航員</h2>
+        <p class="lead">一位神經科醫師的田野筆記：頭皮上的節律、病房的查房、研討會的海報，以及一個始終沒有答案的問題，心智到底住在哪裡？這裡不放名字，只留下波形、地圖和羅盤。</p>
+        <p class="lead dim">診間之外的星空、攝影與旅行，之後也會慢慢收進這本筆記。</p>
+      </div>
+      <div class="seal" role="img" aria-label="印章：神經羅盤">神經羅盤</div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 NeuroCompass 神經羅盤</span>
+    <span>姊妹站 Via Neuronalis 神經科學前沿 · 以原生 JavaScript 與好奇心打造</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+'use strict';
+const RM = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+const DPR = Math.min(2, window.devicePixelRatio || 1);
+const TAU = Math.PI*2;
+const $ = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>Array.from(r.querySelectorAll(s));
+const pad3 = n=>String(n).padStart(3,'0');
+const norm360 = a=>((a%360)+360)%360;
+const angDiff = (from,to)=>((((to-from)%360)+540)%360)-180;
+const MONO = "'IBM Plex Mono', ui-monospace, Menlo, monospace";
+
+/* colors come from the CSS tokens */
+const cs = getComputedStyle(document.documentElement);
+function hexRgb(h){h=h.trim().replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');const n=parseInt(h,16);return [(n>>16)&255,(n>>8)&255,n&255];}
+const C = {};
+['night','night-2','starlight','mist','haze','haze-2','brass','ice','rose'].forEach(k=>{C[k]=hexRgb(cs.getPropertyValue('--'+k));});
+const rgba = (c,a)=>`rgba(${c[0]},${c[1]},${c[2]},${a})`;
+const pre = c=>`rgba(${c[0]},${c[1]},${c[2]},`;
+
+/* ================= eight headings ================= */
+const HEADINGS = [
+  {b:0,  pt:'N', zh:'意識',   en:'Consciousness'},
+  {b:45, pt:'NE',zh:'腦波',   en:'EEG'},
+  {b:90, pt:'E', zh:'神經調控',en:'Neuromodulation'},
+  {b:135,pt:'SE',zh:'腦機介面',en:'BCI'},
+  {b:180,pt:'S', zh:'失智',   en:'Dementia'},
+  {b:225,pt:'SW',zh:'語言',   en:'Language'},
+  {b:270,pt:'W', zh:'動作',   en:'Movement'},
+  {b:315,pt:'NW',zh:'頭痛',   en:'Headache'}
+];
+const nearest = deg=>HEADINGS[Math.round(norm360(deg)/45)%8];
+
+function roseSVG(R, withLabels){
+  const p=[], f=v=>v.toFixed(1);
+  p.push(`<circle class="r-halo" r="${R+16}"/>`);
+  p.push(`<circle class="r-ring" r="${R}"/><circle class="r-ring in" r="${R-14}"/>`);
+  for(let d=0; d<360; d+=5){
+    const a=d*Math.PI/180, s=Math.sin(a), c=-Math.cos(a);
+    const maj=d%90===0, mid=d%45===0, ten=d%15===0;
+    const r1=R-14, r2=maj?R:mid?R-3:ten?R-6:R-9;
+    p.push(`<line class="r-tick${maj?' maj':mid?' mid':''}" x1="${f(r1*s)}" y1="${f(r1*c)}" x2="${f(r2*s)}" y2="${f(r2*c)}"/>`);
+  }
+  const star=(b,L,w)=>{
+    const a=b*Math.PI/180, al=(b-45)*Math.PI/180, ar=(b+45)*Math.PI/180;
+    const tip=`${f(L*Math.sin(a))},${f(-L*Math.cos(a))}`;
+    const bl=`${f(w*Math.sin(al))},${f(-w*Math.cos(al))}`, br=`${f(w*Math.sin(ar))},${f(-w*Math.cos(ar))}`;
+    return `<path class="r-star fa" d="M0,0L${tip}L${bl}Z"/><path class="r-star fb" d="M0,0L${tip}L${br}Z"/>`;
+  };
+  [45,135,225,315].forEach(b=>p.push(star(b,R*.44,R*.085)));
+  [0,90,180,270].forEach(b=>p.push(star(b,R*.62,R*.12)));
+  p.push(`<circle class="r-ring c" r="${f(R*.19)}"/>`);
+  [['N',0],['E',90],['S',180],['W',270]].forEach(([t,b])=>{
+    const a=b*Math.PI/180, r=R-30;
+    p.push(`<text class="r-letter${t==='N'?' north':''}" x="${f(r*Math.sin(a))}" y="${f(-r*Math.cos(a))}">${t}</text>`);
+  });
+  if(withLabels){
+    HEADINGS.forEach(h=>{
+      const a=h.b*Math.PI/180, r=R+36;
+      p.push(`<text class="r-label" data-b="${h.b}" x="${f(r*Math.sin(a))}" y="${f(-r*Math.cos(a))}">${h.zh}</text>`);
+    });
+  }
+  const NL=R*.70, SL=R*.54, W=R*.058;
+  p.push(`<g class="needle"><path class="n-a" d="M0,${f(-NL)}L${f(-W)},0L0,0Z"/><path class="n-b" d="M0,${f(-NL)}L${f(W)},0L0,0Z"/><path class="s-a" d="M0,${f(SL)}L${f(-W)},0L0,0Z"/><path class="s-b" d="M0,${f(SL)}L${f(W)},0L0,0Z"/><circle class="n-cap" r="${f(R*.06)}"/><circle class="n-pin" r="${f(R*.02)}"/></g>`);
+  return p.join('');
+}
+
+/* a compass needle with a little spring, like a real card settling */
+function makeNeedle(el){
+  return {el, a:0, v:0, t:0,
+    step(){
+      if(RM){ this.a=this.t; this.v=0; }
+      else { this.v += angDiff(this.a,this.t)*0.011; this.v *= 0.87; this.a += this.v; }
+      this.el.setAttribute('transform',`rotate(${this.a.toFixed(2)})`);
+      return norm360(Math.round(this.a));
+    }};
+}
+
+/* ================= night sky: stars, a faint Milky Way, a drifting neural constellation ================= */
+const sky = {cv:$('#sky'), w:0, h:0, vh:0, stars:[], nodes:[], pulses:[], band:null, px:-1e4, py:-1e4, spawn:0, dirty:true};
+sky.ctx = sky.cv.getContext('2d');
+function gauss(){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(TAU*v);}
+
+function skyBuild(){
+  const w=document.documentElement.clientWidth, h=Math.max(innerHeight, (window.screen&&screen.height)||0, 640);
+  sky.w=w; sky.h=h; sky.vh=innerHeight;
+  sky.cv.width=Math.round(w*DPR); sky.cv.height=Math.round(h*DPR);
+  sky.cv.style.width=w+'px'; sky.cv.style.height=h+'px';
+  sky.ctx.setTransform(DPR,0,0,DPR,0,0);
+
+  const n=Math.round(Math.min(720,Math.max(220,w*h/2400)));
+  const cols=[pre(C.starlight),pre(C.ice),pre(C.brass)];
+  sky.stars=Array.from({length:n},()=>{const m=Math.random();return {x:Math.random()*w,y:Math.random()*h,r:m<.86?.35+Math.random()*.55:.9+Math.random()*.8,a:.16+Math.random()*.6,s:.4+Math.random()*1.6,p:Math.random()*TAU,c:cols[m<.07?1:m<.1?2:0]};});
+
+  /* Milky Way band (Via Lactea), drawn once; a little taller than the sky for parallax */
+  const bh=Math.round(h*1.3), b=document.createElement('canvas');
+  b.width=Math.round(w*DPR); b.height=Math.round(bh*DPR);
+  const g=b.getContext('2d'); g.setTransform(DPR,0,0,DPR,0,0);
+  const x0=-.1*w, y0=bh*.92, x1=1.1*w, y1=bh*.06, dx=x1-x0, dy=y1-y0, L=Math.hypot(dx,dy), nx=-dy/L, ny=dx/L;
+  const bw=Math.min(w,h)*.17;
+  for(let i=0;i<16;i++){
+    const t=Math.random(), off=gauss()*bw*.35, cx=x0+dx*t+nx*off, cy=y0+dy*t+ny*off, rr=bw*(.9+Math.random()*1.3);
+    const gr=g.createRadialGradient(cx,cy,0,cx,cy,rr);
+    gr.addColorStop(0,rgba(Math.random()<.4?C.brass:C.ice,.045)); gr.addColorStop(1,rgba(C.night,0));
+    g.fillStyle=gr; g.fillRect(cx-rr,cy-rr,rr*2,rr*2);
+  }
+  const dust=Math.round(w*bh/650);
+  for(let i=0;i<dust;i++){
+    const t=Math.random(), off=gauss()*bw*.45;
+    g.fillStyle=rgba(C.starlight,(.04+Math.random()*.2).toFixed(3));
+    const r=Math.random()<.92?.55:1; g.fillRect(x0+dx*t+nx*off,y0+dy*t+ny*off,r,r);
+  }
+  g.globalCompositeOperation='destination-out';
+  for(let i=0;i<40;i++){
+    const t=Math.random(), off=bw*.12+gauss()*bw*.06, cx=x0+dx*t+nx*off, cy=y0+dy*t+ny*off, rr=bw*(.12+Math.random()*.2);
+    const gr=g.createRadialGradient(cx,cy,0,cx,cy,rr); gr.addColorStop(0,'rgba(0,0,0,.35)'); gr.addColorStop(1,'rgba(0,0,0,0)');
+    g.fillStyle=gr; g.fillRect(cx-rr,cy-rr,rr*2,rr*2);
+  }
+  sky.band=b;
+
+  if(!sky.nodes.length || Math.abs(sky.nodes._w-w)>80){
+    const k=w<700?34:62;
+    sky.nodes=Array.from({length:k},()=>({x:Math.random()*w,y:Math.random()*sky.vh,vx:(Math.random()-.5)*.22,vy:(Math.random()-.5)*.22,r:.9+Math.random()*1.3}));
+    sky.nodes._w=w; sky.pulses=[];
+  }
+  sky.dirty=true;
+}
+function neighbor(a,ex){const c=[];for(const n of sky.nodes){if(n===a||n===ex)continue;const d=Math.hypot(n.x-a.x,n.y-a.y);if(d<150)c.push(n);}return c.length?c[(Math.random()*c.length)|0]:null;}
+
+function skyDraw(now){
+  const g=sky.ctx, w=sky.w, h=sky.h, vh=sky.vh, t=now/1000, sy=window.scrollY||0;
+  g.clearRect(0,0,w,h);
+  g.drawImage(sky.band,0,-Math.min(sy*.03,h*.3),w,h*1.3);
+  const off=(sy*.04)%h;
+  for(const s of sky.stars){
+    let y=s.y-off; if(y<0)y+=h;
+    const a=RM?s.a:s.a*(.62+.38*Math.sin(t*s.s+s.p));
+    g.fillStyle=s.c+a.toFixed(3)+')';
+    if(s.r<1) g.fillRect(s.x,y,s.r*1.6,s.r*1.6); else {g.beginPath();g.arc(s.x,y,s.r,0,TAU);g.fill();}
+  }
+  const N=sky.nodes, D=150, ice=pre(C.ice), brass=pre(C.brass), star=pre(C.starlight);
+  for(const n of N){
+    if(!RM){n.x+=n.vx;n.y+=n.vy;}
+    if(n.x<-20)n.x=w+20; else if(n.x>w+20)n.x=-20;
+    if(n.y<-20)n.y=vh+20; else if(n.y>vh+20)n.y=-20;
+  }
+  g.lineWidth=1;
+  for(let i=0;i<N.length;i++)for(let j=i+1;j<N.length;j++){
+    const a=N[i],b=N[j],dx=a.x-b.x,dy=a.y-b.y,d2=dx*dx+dy*dy;
+    if(d2<D*D){const k=1-Math.sqrt(d2)/D;g.strokeStyle=ice+(k*.2).toFixed(3)+')';g.beginPath();g.moveTo(a.x,a.y);g.lineTo(b.x,b.y);g.stroke();}
+  }
+  if(sky.px>-1e3){
+    for(const n of N){const d=Math.hypot(n.x-sky.px,n.y-sky.py);if(d<200){g.strokeStyle=brass+((1-d/200)*.32).toFixed(3)+')';g.beginPath();g.moveTo(n.x,n.y);g.lineTo(sky.px,sky.py);g.stroke();}}
+  }
+  for(const n of N){g.fillStyle=star+'.78)';g.beginPath();g.arc(n.x,n.y,n.r,0,TAU);g.fill();}
+  /* action potentials hop along the constellation */
+  if(!RM && now-sky.spawn>520 && sky.pulses.length<12){
+    sky.spawn=now; const a=N[(Math.random()*N.length)|0], b=a&&neighbor(a);
+    if(b) sky.pulses.push({a,b,t:0,sp:.014+Math.random()*.012,hops:0});
+  }
+  for(const p of sky.pulses){
+    p.t+=p.sp;
+    if(Math.hypot(p.a.x-p.b.x,p.a.y-p.b.y)>D*1.3){p.dead=true;continue;}
+    if(p.t>=1){
+      const nb=(p.hops<6&&Math.random()<.72)?neighbor(p.b,p.a):null;
+      if(nb){p.a=p.b;p.b=nb;p.t=0;p.hops++;} else {p.dead=true;continue;}
+    }
+    const x=p.a.x+(p.b.x-p.a.x)*p.t, y=p.a.y+(p.b.y-p.a.y)*p.t;
+    g.strokeStyle=brass+'.35)'; g.beginPath(); g.moveTo(p.a.x,p.a.y); g.lineTo(x,y); g.stroke();
+    g.fillStyle=brass+'.16)'; g.beginPath(); g.arc(x,y,6,0,TAU); g.fill();
+    g.fillStyle=brass+'.95)'; g.beginPath(); g.arc(x,y,1.9,0,TAU); g.fill();
+  }
+  sky.pulses=sky.pulses.filter(p=>!p.dead);
+}
+
+/* ================= hero compass ================= */
+const heroSvg=$('#heroRose'), heroRead=$('#heroRead');
+heroSvg.innerHTML=roseSVG(132,true);
+const hero=makeNeedle($('.needle',heroSvg));
+const heroLabels=$$('.r-label',heroSvg);
+hero.a=-70; hero.t=0;
+let heroLast=performance.now()-1200, heroShown=-1, heroIdleFrom=0;
+addEventListener('pointermove',e=>{
+  if(e.pointerType==='mouse'){sky.px=e.clientX;sky.py=e.clientY;}
+  if(e.pointerType!=='mouse') return;
+  const r=heroSvg.getBoundingClientRect(); if(r.bottom<0||r.top>innerHeight) return;
+  hero.t=Math.atan2(e.clientX-(r.left+r.width/2),-(e.clientY-(r.top+r.height/2)))*180/Math.PI;
+  heroLast=performance.now(); heroIdleFrom=0;
+},{passive:true});
+document.addEventListener('pointerleave',()=>{sky.px=-1e4;});
+function heroStep(now){
+  if(!RM && now-heroLast>3500){
+    if(!heroIdleFrom) heroIdleFrom=now;
+    const k=Math.floor((now-heroIdleFrom)/2600)%8;
+    hero.t=HEADINGS[k].b+Math.sin(now/650)*2.5;
+  }
+  const deg=hero.step();
+  if(deg!==heroShown){
+    heroShown=deg; const h=nearest(deg);
+    heroRead.innerHTML=`<b>${pad3(deg)}°</b> ${h.pt} · ${h.zh} ${h.en}`;
+    heroLabels.forEach(l=>l.classList.toggle('on',+l.dataset.b===h.b));
+  }
+}
+
+/* ================= scope compass ================= */
+const scopeSvg=$('#scopeRose'), scopeRead=$('#scopeRead');
+scopeSvg.innerHTML=roseSVG(120,false);
+const scope=makeNeedle($('.needle',scopeSvg));
+let scopeShown=-1;
+const cards=$$('.hd');
+function pointScope(b,card){scope.t=b;cards.forEach(c=>c.classList.toggle('on',c===card));}
+cards.forEach(c=>{
+  const b=+c.dataset.b, go=()=>pointScope(b,c);
+  c.addEventListener('pointerenter',go); c.addEventListener('focus',go); c.addEventListener('click',go);
+});
+function scopeStep(){
+  const deg=scope.step();
+  if(deg!==scopeShown){scopeShown=deg;const h=nearest(deg);scopeRead.innerHTML=`<b>${pad3(deg)}°</b> ${h.pt} · ${h.zh}`;}
+}
+heroLabels.forEach(l=>l.addEventListener('click',()=>{
+  const b=+l.dataset.b, card=$('#h-'+b);
+  card.scrollIntoView({behavior:RM?'auto':'smooth',block:'center'});
+  pointScope(b,card);
+}));
+
+/* ================= nav: needle follows scroll, active section ================= */
+const navNeedle=$('#navNeedle');
+function navTick(){
+  const max=document.documentElement.scrollHeight-innerHeight, p=max>0?scrollY/max:0;
+  navNeedle.setAttribute('transform',`rotate(${(p*360).toFixed(1)} 11 11)`);
+}
+addEventListener('scroll',navTick,{passive:true}); navTick();
+const navLinks=$$('.nav a.l');
+if('IntersectionObserver' in window){
+  const so=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting)navLinks.forEach(a=>a.classList.toggle('on',a.dataset.sec===en.target.id));}),{rootMargin:'-45% 0px -50% 0px'});
+  ['manifesto','scope','lab','notes','about'].forEach(id=>so.observe(document.getElementById(id)));
+}
+
+/* ================= EEG lab ================= */
+/* 10–20 positions: angle from nasion (− = left), radius as a fraction of the 10% ring */
+const EL=[
+ ['Fp1','左額極',-18,1,'frontal'],['Fp2','右額極',18,1,'frontal'],
+ ['F7','左前顳',-54,1,'frontal'],['F3','左額',-39.9,.652,'frontal'],['Fz','額中線',0,.5,'frontal'],['F4','右額',39.9,.652,'frontal'],['F8','右前顳',54,1,'frontal'],
+ ['T7','左中顳',-90,1,'temporal'],['C3','左中央',-90,.5,'central'],['Cz','頭頂中央',0,0,'central'],['C4','右中央',90,.5,'central'],['T8','右中顳',90,1,'temporal'],
+ ['P7','左後顳',-126,1,'posterior'],['P3','左頂',-140.1,.652,'posterior'],['Pz','頂中線',180,.5,'posterior'],['P4','右頂',140.1,.652,'posterior'],['P8','右後顳',126,1,'posterior'],
+ ['O1','左枕',-162,1,'posterior'],['O2','右枕',162,1,'posterior']
+];
+const REGION={frontal:['額區','Frontal'],central:['中央區','Central'],temporal:['顳區','Temporal'],posterior:['頂枕區','Parieto-occipital']};
+const REG={
+  delta:{frontal:1,central:.9,temporal:.85,posterior:.75},
+  theta:{frontal:1,central:.9,temporal:.8,posterior:.7},
+  alpha:{frontal:.4,central:.65,temporal:.6,posterior:1},
+  beta:{frontal:1,central:.85,temporal:.7,posterior:.5},
+  sw:{frontal:1,central:.92,temporal:.72,posterior:.7}
+};
+const BANDS=[
+  {k:'delta',sym:'δ',rng:'0.5–4 Hz',f:[1.1,1.9,3.2]},
+  {k:'theta',sym:'θ',rng:'4–8 Hz',f:[4.7,5.8,6.9]},
+  {k:'alpha',sym:'α',rng:'8–13 Hz',f:[9.4,10.1,10.7]},
+  {k:'beta',sym:'β',rng:'13–30 Hz',f:[15.5,19,23.5]}
+];
+const STATES={
+  eyesOpen:{zh:'睜眼清醒',en:'Eyes open',A:{delta:6,theta:7,alpha:10,beta:8},dom:'beta',
+    note:'低振幅的快波。睜開眼睛後，後頭部的 α 波被阻斷，額中央的 β 波變得明顯，這是大腦在白天的待機狀態。'},
+  eyesClosed:{zh:'閉眼清醒',en:'Eyes closed',A:{delta:11,theta:9,alpha:30,beta:5},dom:'alpha',
+    note:'後頭部優勢節律（PDR）：約 10 Hz 的 α 波在枕葉最明顯，是清醒而安靜的大腦最典型的樣子。一睜眼就會被阻斷。'},
+  drowsy:{zh:'嗜睡',en:'Drowsy',A:{delta:14,theta:24,alpha:13,beta:5},dom:'theta',
+    note:'α 波開始斷斷續續，4–8 Hz 的 θ 波在額中央增加。大腦正站在清醒與睡眠的交界。'},
+  deepSleep:{zh:'深睡 N3',en:'Deep sleep',A:{delta:75,theta:16,alpha:5,beta:3},dom:'delta',
+    note:'高振幅的 δ 波（0.5–2 Hz）佔滿整段紀錄，這是 N3 慢波睡眠，一般認為和突觸的夜間調整與記憶整理有關。'},
+  absence:{zh:'失神發作',en:'Absence',A:null,dom:'sw',
+    note:'全面性 3 Hz 棘慢波，從額葉到枕葉同步出現，額部通常最明顯。意識中斷幾秒到十幾秒，病人多半不會跌倒，結束後立刻恢復。'}
+};
+const DAR_NOTE='δ 與 α 的功率比。數值越高，代表慢波越多、α 越少；意識障礙與失智研究常用它來量化腦波減慢。此處為模擬訊號。';
+let cur='eyesClosed', selE=17, hoverE=null, absT0=0, lab='eeg';
+
+const PH=EL.map(()=>{const o={e:Math.random()*TAU,d0:Math.random()*TAU,m0:Math.random()*TAU,j:{}};BANDS.forEach(b=>{o[b.k]=[0,1,2].map(()=>Math.random()*TAU);o.j[b.k]=.9+Math.random()*.2;});return o;});
+
+function bgSig(i,t,A){
+  const reg=EL[i][4], p=PH[i]; let v=0;
+  for(const b of BANDS){
+    let amp=A[b.k]*REG[b.k][reg]*p.j[b.k]*.577;
+    if(b.k==='alpha') amp*=.7+.3*Math.sin(TAU*.31*t+p.e);
+    const ph=p[b.k], f=b.f;
+    v+=amp*(Math.sin(TAU*f[0]*t+ph[0])+Math.sin(TAU*f[1]*t+ph[1])+Math.sin(TAU*f[2]*t+ph[2]));
+  }
+  return v+2.5*Math.sin(TAU*.4*t+p.d0)+.9*Math.sin(TAU*31*t+p.m0);
+}
+/* absence: 6.5 s bursts of generalized spike-and-wave, slowing from 3.4 to 2.7 Hz, every 10 s */
+const SW_CYCLE=10, SW_BURST=6.5;
+function swAt(t){
+  const u=(((t-absT0)%SW_CYCLE)+SW_CYCLE)%SW_CYCLE;
+  if(u>SW_BURST) return null;
+  const ph=3.4*u-.7*u*u/(2*SW_BURST), x=ph-Math.floor(ph);
+  const env=Math.min(1,u/.25)*Math.min(1,(SW_BURST-u)/.35);
+  const shape=Math.exp(-(((x-.07)/.026)**2))-.38*Math.exp(-(((x-.17)/.05)**2))+.62*Math.exp(-(((x-.5)/.15)**2))-.3*Math.exp(-(((x-.86)/.08)**2));
+  return {env,shape};
+}
+function sigAt(i,t){
+  if(cur!=='absence') return bgSig(i,t,STATES[cur].A);
+  const s=swAt(t), base=bgSig(i,t,STATES.eyesOpen.A);
+  return s ? base*(1-.8*s.env)+s.env*s.shape*150*REG.sw[EL[i][4]] : base;
+}
+function topoW(i,t){
+  const reg=EL[i][4];
+  if(cur==='absence'){const s=swAt(t);return s?s.env*REG.sw[reg]*(.55+.45*Math.max(0,s.shape)):REG.beta[reg]*.35;}
+  const st=STATES[cur]; let w=REG[st.dom][reg];
+  if(st.dom==='alpha') w*=.75+.25*Math.sin(TAU*.31*t+PH[i].e);
+  return w;
+}
+
+const headCv=$('#headCv'), traceCv=$('#traceCv'), fireCv=$('#fireCv');
+function fit(cv){
+  const r=cv.getBoundingClientRect(), w=Math.round(r.width), h=Math.round(r.height);
+  if(w!==cv._w||h!==cv._h){cv._w=w;cv._h=h;cv.width=Math.max(1,Math.round(w*DPR));cv.height=Math.max(1,Math.round(h*DPR));}
+}
+let headG=null;
+function headGeom(w,h){const R=Math.min(w*.4,(h-60)*.44);return {cx:w/2,cy:h/2+12,R};}
+function ePos(i,G){const a=EL[i][2]*Math.PI/180, r=EL[i][3]*.8*G.R;return [G.cx+r*Math.sin(a),G.cy-r*Math.cos(a)];}
+
+function drawHead(t){
+  const cv=headCv, w=cv._w, h=cv._h; if(!w||!h) return;
+  const g=cv.getContext('2d'); g.setTransform(DPR,0,0,DPR,0,0); g.clearRect(0,0,w,h);
+  const G=headGeom(w,h); headG=G;
+  const burst=cur==='absence'&&!!swAt(t), col=burst?C.rose:C.ice, rr=G.R*.46;
+  g.save(); g.beginPath(); g.arc(G.cx,G.cy,G.R,0,TAU); g.clip(); g.globalCompositeOperation='lighter';
+  for(let i=0;i<EL.length;i++){
+    const [x,y]=ePos(i,G), k=topoW(i,t), gr=g.createRadialGradient(x,y,0,x,y,rr);
+    gr.addColorStop(0,rgba(col,(.26*k).toFixed(3))); gr.addColorStop(1,rgba(col,0));
+    g.fillStyle=gr; g.fillRect(x-rr,y-rr,rr*2,rr*2);
+  }
+  g.restore();
+  g.strokeStyle=rgba(C.haze,.16); g.lineWidth=1; g.setLineDash([2,5]);
+  g.beginPath(); g.arc(G.cx,G.cy,G.R*.8,0,TAU); g.stroke();
+  g.beginPath(); g.moveTo(G.cx,G.cy-G.R); g.lineTo(G.cx,G.cy+G.R); g.moveTo(G.cx-G.R,G.cy); g.lineTo(G.cx+G.R,G.cy); g.stroke();
+  g.setLineDash([]);
+  g.strokeStyle=rgba(C.mist,.55); g.lineWidth=1.4;
+  g.beginPath(); g.arc(G.cx,G.cy,G.R,0,TAU); g.stroke();
+  g.beginPath(); g.moveTo(G.cx-G.R*.08,G.cy-G.R*.997); g.lineTo(G.cx,G.cy-G.R*1.11); g.lineTo(G.cx+G.R*.08,G.cy-G.R*.997); g.stroke();
+  g.beginPath(); g.ellipse(G.cx-G.R,G.cy,G.R*.045,G.R*.11,0,Math.PI/2,Math.PI*1.5); g.stroke();
+  g.beginPath(); g.ellipse(G.cx+G.R,G.cy,G.R*.045,G.R*.11,0,-Math.PI/2,Math.PI/2); g.stroke();
+  g.textAlign='center'; g.textBaseline='middle'; g.font=`500 10px ${MONO}`; g.fillStyle=rgba(C['haze-2'],1);
+  g.fillText('L',G.cx-G.R*1.17,G.cy); g.fillText('R',G.cx+G.R*1.17,G.cy);
+  const er=Math.max(9.5,G.R*.078);
+  g.font=`500 ${Math.max(8.5,er*.78).toFixed(1)}px ${MONO}`;
+  for(let i=0;i<EL.length;i++){
+    const [x,y]=ePos(i,G), sel=i===selE, hov=i===hoverE;
+    g.beginPath(); g.arc(x,y,er,0,TAU);
+    g.fillStyle=sel?rgba(C.brass,1):rgba(C['night-2'],.92); g.fill();
+    g.lineWidth=sel||hov?1.5:1; g.strokeStyle=sel?rgba(C.brass,1):hov?rgba(C.ice,1):rgba(C.mist,.4); g.stroke();
+    if(sel){g.beginPath();g.arc(x,y,er+4.5,0,TAU);g.strokeStyle=rgba(C.brass,.45);g.lineWidth=1;g.stroke();}
+    g.fillStyle=sel?rgba(C.night,1):hov?rgba(C.ice,1):rgba(C.mist,.88);
+    g.fillText(EL[i][0],x,y+.5);
+  }
+}
+
+const MSPX=10; /* 10 ms per px */
+function channels(){
+  const ctx=['Fz','Cz','O1','O2'].map(c=>EL.findIndex(e=>e[0]===c)).filter(i=>i!==selE).slice(0,3);
+  return [selE,...ctx];
+}
+function drawTrace(t){
+  const cv=traceCv, w=cv._w, h=cv._h; if(!w||!h) return;
+  const g=cv.getContext('2d'); g.setTransform(DPR,0,0,DPR,0,0); g.clearRect(0,0,w,h);
+  const L=50, Rx=w-16, T=40, B=h-36, pw=Rx-L, tStart=t-pw*MSPX/1000;
+  const chs=channels(), rowH=(B-T)/chs.length, scale=rowH/170;
+  g.lineWidth=1;
+  for(let k=Math.ceil(tStart*5);k<=Math.floor(t*5);k++){
+    const x=Math.round(L+(k/5-tStart)*1000/MSPX)+.5, major=k%5===0;
+    g.strokeStyle=rgba(C.haze,major?.15:.055); g.beginPath(); g.moveTo(x,T-10); g.lineTo(x,B+6); g.stroke();
+  }
+  const sw=cur==='absence'?swAt(t):null, selCol=cur==='absence'?C.rose:C.ice;
+  chs.forEach((ci,r)=>{
+    const y0=T+rowH*(r+.5);
+    g.strokeStyle=rgba(C.haze,.08); g.lineWidth=1; g.beginPath(); g.moveTo(L,y0); g.lineTo(Rx,y0); g.stroke();
+    g.font=`500 11px ${MONO}`; g.textAlign='right'; g.textBaseline='middle';
+    g.fillStyle=r===0?rgba(C.brass,1):rgba(C.haze,.9); g.fillText(EL[ci][0],L-12,y0);
+    g.lineWidth=r===0?1.6:1.1; g.strokeStyle=r===0?rgba(selCol,1):rgba(C.mist,.5);
+    g.beginPath(); let ly=y0;
+    for(let x=0;x<=pw;x++){const y=y0-sigAt(ci,tStart+x*MSPX/1000)*scale; if(x===0)g.moveTo(L,y); else g.lineTo(L+x,y); ly=y;}
+    g.stroke();
+    if(r===0){g.fillStyle=rgba(selCol,.25);g.beginPath();g.arc(Rx,ly,5,0,TAU);g.fill();g.fillStyle=rgba(selCol,1);g.beginPath();g.arc(Rx,ly,1.8,0,TAU);g.fill();}
+  });
+  /* calibration mark */
+  const cy=h-14, vb=50*scale;
+  g.strokeStyle=rgba(C.brass,.9); g.lineWidth=1.2; g.beginPath(); g.moveTo(Rx-100,cy); g.lineTo(Rx,cy); g.lineTo(Rx,cy-vb); g.stroke();
+  g.font=`500 10px ${MONO}`; g.fillStyle=rgba(C.brass,.95); g.textAlign='right'; g.textBaseline='middle';
+  g.fillText('1 s · 50 µV',Rx-110,cy);
+  if(cur==='absence'){
+    g.textAlign='right'; g.textBaseline='top'; g.font=`500 10.5px ${MONO}`;
+    g.fillStyle=sw?rgba(C.rose,1):rgba(C.haze,.8);
+    g.fillText(sw?'● 3 Hz SPIKE-AND-WAVE':'發作間期 · INTERICTAL',Rx,13);
+  }
+}
+
+/* info panel */
+const icRegion=$('#icRegion'), icCode=$('#icCode'), icZh=$('#icZh'), icState=$('#icState'), icNote=$('#icNote'), traceLabel=$('#traceLabel');
+const darVal=$('#darVal'), darMark=$('#darMark'), darNote=$('#darNote'), bandsEl=$('#bands');
+bandsEl.innerHTML=BANDS.map(b=>`<div class="band" data-k="${b.k}"><span class="sym">${b.sym}</span><span class="rng">${b.rng}</span><span class="bar"><i></i></span><span class="pct">–</span></div>`).join('');
+function updateInfo(){
+  const e=EL[selE], st=STATES[cur], reg=e[4];
+  icRegion.textContent=`${REGION[reg][0]} · ${REGION[reg][1]}`;
+  icCode.textContent=e[0]; icZh.textContent=e[1];
+  icState.textContent=`${st.zh} · ${st.en}`; icNote.textContent=st.note;
+  traceLabel.textContent=`${e[0]} ${e[1]} · ${st.zh}`;
+  let P=null;
+  if(st.A){P={};let tot=0;BANDS.forEach(b=>{const a=st.A[b.k]*REG[b.k][reg];P[b.k]=a*a;tot+=a*a;});BANDS.forEach(b=>P[b.k]/=tot);}
+  $$('.band',bandsEl).forEach(row=>{const v=P?P[row.dataset.k]:0;$('i',row).style.width=(v*100).toFixed(1)+'%';$('.pct',row).textContent=P?Math.round(v*100)+'%':'—';});
+  if(P){
+    const dar=P.delta/P.alpha;
+    darVal.textContent=dar>=99.5?'>99':dar>=10?dar.toFixed(0):dar.toFixed(2);
+    darMark.style.left=(Math.max(0,Math.min(1,(Math.log10(dar)+1)/3))*100).toFixed(1)+'%';
+    darMark.hidden=false; darNote.textContent=DAR_NOTE;
+  } else {
+    darVal.textContent='—'; darMark.hidden=true;
+    darNote.textContent='棘慢波不是穩定的背景節律，DAR 在這裡不適用。';
+  }
+}
+const stateBtns=$('#stateBtns');
+Object.entries(STATES).forEach(([k,s])=>{
+  const b=document.createElement('button'); b.type='button'; b.dataset.k=k;
+  b.setAttribute('aria-pressed',String(k===cur)); b.innerHTML=`${s.zh}<span>${s.en}</span>`;
+  b.addEventListener('click',()=>{
+    cur=k; if(k==='absence') absT0=performance.now()/1000-SW_CYCLE+1.2;
+    $$('button',stateBtns).forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.k===k)));
+    updateInfo();
+  });
+  stateBtns.appendChild(b);
+});
+function hit(mx,my){
+  if(!headG) return null; const lim=Math.max(9.5,headG.R*.078)+6; let best=null,bd=lim;
+  for(let i=0;i<EL.length;i++){const [x,y]=ePos(i,headG),d=Math.hypot(mx-x,my-y);if(d<bd){bd=d;best=i;}}
+  return best;
+}
+headCv.addEventListener('pointermove',e=>{const r=headCv.getBoundingClientRect();hoverE=hit(e.clientX-r.left,e.clientY-r.top);headCv.style.cursor=hoverE!==null?'pointer':'default';});
+headCv.addEventListener('pointerleave',()=>{hoverE=null;});
+headCv.addEventListener('click',e=>{const r=headCv.getBoundingClientRect(),k=hit(e.clientX-r.left,e.clientY-r.top);if(k!==null){selE=k;updateInfo();}});
+headCv.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown'){selE=(selE+1)%EL.length;updateInfo();e.preventDefault();}
+  else if(e.key==='ArrowLeft'||e.key==='ArrowUp'){selE=(selE+EL.length-1)%EL.length;updateInfo();e.preventDefault();}
+});
+updateInfo();
+
+/* ================= Neuron Fire ================= */
+const fire={nodes:[],fired:new Map(),ripples:[],count:0};
+const fireCount=$('#fireCount');
+function fireInit(){
+  const w=fireCv._w,h=fireCv._h; if(!w||!h||fire.nodes.length) return;
+  const n=w<600?46:74;
+  for(let i=0;i<n;i++) fire.nodes.push({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*.28,vy:(Math.random()-.5)*.28,r:1+Math.random()*1.6});
+}
+function fireAt(n){
+  const now=performance.now(), f=fire.fired.get(n);
+  if(f&&now-f<2400) return;
+  fire.fired.set(n,now); fire.count++; fireCount.textContent=fire.count;
+  setTimeout(()=>{for(const m of fire.nodes){if(m===n)continue;const d=Math.hypot(m.x-n.x,m.y-n.y);if(d<125&&Math.random()<.7)setTimeout(()=>fireAt(m),50+d*1.5);}},110);
+}
+fireCv.addEventListener('click',e=>{
+  const r=fireCv.getBoundingClientRect(), mx=e.clientX-r.left, my=e.clientY-r.top;
+  let best=null,bd=44; for(const n of fire.nodes){const d=Math.hypot(n.x-mx,n.y-my);if(d<bd){bd=d;best=n;}}
+  if(!best){best={x:mx,y:my,vx:0,vy:0,r:2.2};fire.nodes.push(best);}
+  fire.ripples.push({x:best.x,y:best.y,t0:performance.now()});
+  fireAt(best);
+});
+$('#fireReset').addEventListener('click',()=>{fire.count=0;fireCount.textContent='0';fire.fired.clear();});
+function drawFire(now){
+  const w=fireCv._w,h=fireCv._h; if(!w||!h) return; fireInit();
+  const g=fireCv.getContext('2d'); g.setTransform(DPR,0,0,DPR,0,0); g.clearRect(0,0,w,h);
+  const N=fire.nodes, brass=pre(C.brass), ice=pre(C.ice);
+  for(const n of N){n.x+=n.vx;n.y+=n.vy;if(n.x<0||n.x>w)n.vx*=-1;if(n.y<0||n.y>h)n.vy*=-1;}
+  g.lineWidth=1;
+  for(let i=0;i<N.length;i++)for(let j=i+1;j<N.length;j++){
+    const a=N[i],b=N[j],d=Math.hypot(a.x-b.x,a.y-b.y); if(d>=120) continue;
+    const fa=fire.fired.has(a)&&now-fire.fired.get(a)<1500, fb=fire.fired.has(b)&&now-fire.fired.get(b)<1500;
+    g.strokeStyle=fa&&fb?brass+((1-d/120)*.85).toFixed(3)+')':ice+((1-d/120)*.26).toFixed(3)+')';
+    g.beginPath(); g.moveTo(a.x,a.y); g.lineTo(b.x,b.y); g.stroke();
+  }
+  fire.ripples=fire.ripples.filter(r=>now-r.t0<900);
+  for(const r of fire.ripples){const k=(now-r.t0)/900;g.strokeStyle=brass+((1-k)*.6).toFixed(3)+')';g.beginPath();g.arc(r.x,r.y,8+k*90,0,TAU);g.stroke();}
+  for(const n of N){
+    const f=fire.fired.get(n);
+    if(f&&now-f<1600){const k=1-(now-f)/1600;g.fillStyle=brass+(.2*k).toFixed(3)+')';g.beginPath();g.arc(n.x,n.y,n.r+10*k,0,TAU);g.fill();g.fillStyle=brass+(.45+.55*k).toFixed(3)+')';}
+    else g.fillStyle=rgba(C.starlight,.82);
+    g.beginPath(); g.arc(n.x,n.y,n.r,0,TAU); g.fill();
+  }
+}
+
+/* tabs */
+const tabEEG=$('#tabEEG'), tabFire=$('#tabFire');
+function setLab(which){
+  lab=which; const eeg=which==='eeg';
+  tabEEG.setAttribute('aria-selected',String(eeg)); tabFire.setAttribute('aria-selected',String(!eeg));
+  $('#viewEEG').hidden=!eeg; $('#infoEEG').hidden=!eeg; stateBtns.hidden=!eeg;
+  $('#viewFire').hidden=eeg; $('#infoFire').hidden=eeg;
+  requestAnimationFrame(()=>{fit(headCv);fit(traceCv);fit(fireCv);});
+}
+tabEEG.addEventListener('click',()=>setLab('eeg'));
+tabFire.addEventListener('click',()=>setLab('fire'));
+
+if('ResizeObserver' in window){
+  const ro=new ResizeObserver(()=>{fit(headCv);fit(traceCv);fit(fireCv);});
+  [$('#headBox'),$('#traceBox'),$('#viewFire')].forEach(el=>ro.observe(el));
+}
+fit(headCv); fit(traceCv);
+
+/* ================= visibility, reveal, main loop ================= */
+let visHero=true, visScope=false, visLab=false;
+if('IntersectionObserver' in window){
+  const vo=new IntersectionObserver(es=>es.forEach(en=>{
+    if(en.target.id==='top') visHero=en.isIntersecting;
+    else if(en.target.id==='scope') visScope=en.isIntersecting;
+    else if(en.target.id==='lab') visLab=en.isIntersecting;
+  }),{rootMargin:'120px 0px'});
+  ['top','scope','lab'].forEach(id=>vo.observe(document.getElementById(id)));
+  if(!RM){
+    const io=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);}}));
+    $$('.rv').forEach(el=>{if(el.getBoundingClientRect().top>innerHeight) io.observe(el);});
+  }
+} else { visScope=visLab=true; }
+
+let lastW=0;
+function onResize(){
+  const w=document.documentElement.clientWidth;
+  sky.vh=innerHeight;
+  if(w!==lastW||innerHeight>sky.h){lastW=w;skyBuild();}
+}
+addEventListener('resize',onResize); onResize();
+
+function frame(now){
+  if(!RM||sky.dirty){skyDraw(now);sky.dirty=false;}
+  if(visHero) heroStep(now);
+  if(visScope) scopeStep();
+  if(visLab){ if(lab==='eeg'){drawHead(now/1000);drawTrace(now/1000);} else drawFire(now); }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
